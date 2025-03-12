@@ -51,6 +51,9 @@ fun ListPage(viewModel: ToDoViewModel) {
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
+    var todoItem by remember {
+        mutableStateOf(ToDo())
+    }
 
     Column (
         modifier = Modifier
@@ -67,7 +70,10 @@ fun ListPage(viewModel: ToDoViewModel) {
                         ToDoItem(
                             item = item,
                             onDelete = { viewModel.deleteToDo(item.id) },
-                            onEdit = { }
+                            onEdit = {
+                                isSheetOpen = true
+                                todoItem = item
+                            }
                         )
                     }
                 }
@@ -104,7 +110,11 @@ fun ListPage(viewModel: ToDoViewModel) {
         }
 
         if (isSheetOpen) {
-            BottomSheet(viewModel, {isSheetOpen = false})
+            BottomSheet(viewModel,
+                {isSheetOpen = false
+                todoItem = ToDo()},
+                todoItem)
+
         }
     }
 
@@ -174,12 +184,12 @@ fun ToDoItem(item: ToDo, onEdit: ()-> Unit, onDelete : ()-> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheet(viewModel: ToDoViewModel, dismissRequest: () -> Unit) {
+fun BottomSheet(viewModel: ToDoViewModel, dismissRequest: () -> Unit, todoItem: ToDo) {
     var inputTitle by remember {
-        mutableStateOf("")
+        mutableStateOf(todoItem.title)
     }
     var inputDetails by remember {
-        mutableStateOf("")
+        mutableStateOf(todoItem.details)
     }
 //    var isSheetOpen by rememberSaveable {
 //        mutableStateOf(false)
@@ -212,26 +222,39 @@ fun BottomSheet(viewModel: ToDoViewModel, dismissRequest: () -> Unit) {
                     label = {Text("Task")},
                     onValueChange = { inputTitle = it },
                     modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(2.dp)
+                        .fillMaxWidth()
+                        .padding(2.dp)
                 )
                 OutlinedTextField(
                     value = inputDetails,
                     label = {Text("Details")},
                     onValueChange = { inputDetails = it },
                     modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(2.dp)
+                        .fillMaxWidth()
+                        .padding(2.dp)
                 )
                 Button(
                     modifier = Modifier
                         .fillMaxWidth(),
                     onClick = {
-                    viewModel.addToDo(title = inputTitle, details = inputDetails)
-                    inputTitle = ""
-                    inputDetails = ""
-                }) {
-                    Text(text = "Add note")
+                        if (todoItem.id == 0) {
+                            viewModel.addToDo(
+                                title = inputTitle,
+                                details = inputDetails
+                            )
+                            inputTitle = ""
+                            inputDetails = ""
+                        }
+                        else {
+                            viewModel.editToDo(
+                                id = todoItem.id,
+                                title = inputTitle,
+                                details = inputDetails
+                            )
+                        }
+
+                    }) {
+                    Text(text = "Update")
                 }
             }
         }

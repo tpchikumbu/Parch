@@ -9,7 +9,7 @@ import java.util.Date
 data class ToDo(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
-    var title: String,
-    var details: String,
-    var createdAt: Date
+    var title: String = "",
+    var details: String = "",
+    var createdAt: Date = Date.from(Instant.now())
 )
