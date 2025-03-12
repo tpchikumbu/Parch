@@ -27,11 +27,11 @@ class ToDoViewModel : ViewModel() {
         }
     }
 
-//    fun editToDo(id: Int, title: String, details: String = "") {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            toDoDAO.editToDo(id, title, details)
-//        }
-//    }
+    fun editToDo(id: Int, title: String, details: String = "") {
+        viewModelScope.launch(Dispatchers.IO) {
+            toDoDAO.editToDo(id, title, details)
+        }
+    }
 
     fun deleteToDo(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {

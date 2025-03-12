@@ -16,8 +16,8 @@ interface todoDAO {
     @Insert
     fun addToDo(todo: ToDo)
 
-//    @Update
-//    fun editToDo(id: Int, title: String, details: String = "")
+    @Query("UPDATE TODO SET title = :title, details = :details WHERE id = :id")
+    fun editToDo(id: Int, title: String, details: String = "")
 
     @Query("DELETE FROM TODO WHERE id = :id")
     fun deleteToDo(id: Int)

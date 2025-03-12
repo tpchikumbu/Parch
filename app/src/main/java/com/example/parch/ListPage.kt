@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.parch
 
 import androidx.compose.foundation.background
@@ -21,8 +23,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,30 +48,15 @@ import java.util.Locale
 @Composable
 fun ListPage(viewModel: ToDoViewModel) {
     val todoList by viewModel.todoList.observeAsState()
-    var inputText by remember {
-        mutableStateOf("")
+    var isSheetOpen by rememberSaveable {
+        mutableStateOf(false)
     }
+
     Column (
         modifier = Modifier
             .fillMaxHeight()
             .padding(8.dp)
     ) {
-        // Input text row
-//        Row (
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(8.dp),
-//            horizontalArrangement = Arrangement.SpaceEvenly
-//        ) {
-//            TextField(value = inputText, onValueChange = { inputText = it})
-//            Button(onClick = {
-//                viewModel.addToDo(title = inputText)
-//                inputText = ""
-//            }) {
-//                Text(text = "add")
-//            }
-//        }
-
         // Column of added to-do
         todoList?.let {
             LazyColumn(
@@ -92,16 +79,35 @@ fun ListPage(viewModel: ToDoViewModel) {
             fontSize = 20.sp
         )
     }
+
+//    Column (
+//        modifier = Modifier
+//            .fillMaxHeight()
+//            .padding(8.dp),
+//        verticalArrangement = Arrangement.Bottom,
+//        horizontalAlignment = Alignment.End
+//
+//        ){
+//        BottomSheet(viewModel)
+//    }
+
     Column (
-        modifier = Modifier
-            .fillMaxHeight()
-            .padding(8.dp),
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.End
+    ) {
+        FloatingActionButton(
+            onClick = {
+                isSheetOpen = !isSheetOpen
+            },
+        ) {
+            Icon(Icons.Filled.Add, "Add note")
+        }
 
-        ){
-        BottomSheet(viewModel)
+        if (isSheetOpen) {
+            BottomSheet(viewModel, {isSheetOpen = false})
+        }
     }
+
 }
 
 @Composable
@@ -116,13 +122,13 @@ fun ToDoItem(item: ToDo, onEdit: ()-> Unit, onDelete : ()-> Unit) {
             .padding(5.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.primary)
-            .padding(8.dp),
+            .padding(5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
             checked = checkedState.value,
             onCheckedChange = {checkedState.value = it},
-            modifier = Modifier.padding(5.dp),
+            modifier = Modifier.padding(2.dp),
         )
         Column(
             modifier = Modifier
@@ -143,7 +149,7 @@ fun ToDoItem(item: ToDo, onEdit: ()-> Unit, onDelete : ()-> Unit) {
             Text(
                 text = SimpleDateFormat("HH:mm:aa, dd/mm/yy", Locale.ENGLISH).format(item.createdAt),
                 fontSize = 10.sp,
-                fontWeight = FontWeight.Thin,
+                fontWeight = FontWeight.Bold,
                 color = Color.LightGray
             )
         }
@@ -168,45 +174,54 @@ fun ToDoItem(item: ToDo, onEdit: ()-> Unit, onDelete : ()-> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheet(viewModel: ToDoViewModel) {
+fun BottomSheet(viewModel: ToDoViewModel, dismissRequest: () -> Unit) {
     var inputTitle by remember {
         mutableStateOf("")
     }
     var inputDetails by remember {
         mutableStateOf("")
     }
-    var isSheetOpen by rememberSaveable {
-        mutableStateOf(false)
-    }
-    val sheetState = rememberModalBottomSheetState()
+//    var isSheetOpen by rememberSaveable {
+//        mutableStateOf(false)
+//    }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    FloatingActionButton(
-        onClick = {
-            isSheetOpen = true
-        },
-    ) {
-        Icon(Icons.Filled.Add, "Add note")
-    }
+//    FloatingActionButton(
+//        onClick = {
+//            isSheetOpen = true
+//        },
+//    ) {
+//        Icon(Icons.Filled.Add, "Add note")
+//    }
 
-    if (isSheetOpen) {
+//    if (isSheetOpen) {
         ModalBottomSheet(
             modifier = Modifier
                 .padding(5.dp),
             sheetState = sheetState,
-            onDismissRequest = {
-                isSheetOpen = false
-            }
+            onDismissRequest = dismissRequest
+//            onDismissRequest = {
+//                isSheetOpen = false
+//            }
         ) {
             Column (
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                TextField(value = inputTitle, onValueChange = { inputTitle = it }, modifier = Modifier
+                OutlinedTextField(
+                    value = inputTitle,
+                    label = {Text("Task")},
+                    onValueChange = { inputTitle = it },
+                    modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(2.dp)
                 )
-                TextField(value = inputDetails, onValueChange = { inputDetails = it }, modifier = Modifier
+                OutlinedTextField(
+                    value = inputDetails,
+                    label = {Text("Details")},
+                    onValueChange = { inputDetails = it },
+                    modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(2.dp)
                 )
                 Button(
                     modifier = Modifier
@@ -220,5 +235,5 @@ fun BottomSheet(viewModel: ToDoViewModel) {
                 }
             }
         }
-    }
+//    }
 }
