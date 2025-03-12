@@ -10,7 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -69,6 +73,8 @@ fun ListPage(viewModel: ToDoViewModel) {
         // Column of added to-do
         todoList?.let {
             LazyColumn(
+                modifier = Modifier
+                    .padding(5.dp),
                 content = {
                     itemsIndexed(it) { index: Int, item: ToDo ->
                         ToDoItem(
@@ -85,23 +91,43 @@ fun ListPage(viewModel: ToDoViewModel) {
             text = "No items in list.",
             fontSize = 20.sp
         )
+    }
+    Column (
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(8.dp),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.End
 
+        ){
         BottomSheet(viewModel)
     }
 }
 
 @Composable
 fun ToDoItem(item: ToDo, onEdit: ()-> Unit, onDelete : ()-> Unit) {
+    val checkedState = remember {
+        mutableStateOf(false)
+    }
+
     Row (
         modifier = Modifier
-            .fillMaxWidth()
+//            .fillMaxWidth()
+            .padding(5.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.primary)
-            .padding(10.dp),
+            .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Checkbox(
+            checked = checkedState.value,
+            onCheckedChange = {checkedState.value = it},
+            modifier = Modifier.padding(5.dp),
+        )
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .padding(5.dp)
         ) {
             Text(
                 text = item.title,
@@ -112,13 +138,12 @@ fun ToDoItem(item: ToDo, onEdit: ()-> Unit, onDelete : ()-> Unit) {
             Text(
                 text = item.details,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Thin,
                 color = Color.White
             )
             Text(
                 text = SimpleDateFormat("HH:mm:aa, dd/mm/yy", Locale.ENGLISH).format(item.createdAt),
                 fontSize = 10.sp,
-                fontWeight = FontWeight.ExtraLight,
+                fontWeight = FontWeight.Thin,
                 color = Color.LightGray
             )
         }
@@ -158,24 +183,41 @@ fun BottomSheet(viewModel: ToDoViewModel) {
     FloatingActionButton(
         onClick = {
             isSheetOpen = true
-        }
-    ) { }
+        },
+    ) {
+        Icon(Icons.Filled.Add, "Add note")
+    }
 
     if (isSheetOpen) {
         ModalBottomSheet(
+            modifier = Modifier
+                .padding(5.dp),
             sheetState = sheetState,
             onDismissRequest = {
                 isSheetOpen = false
             }
         ) {
-            TextField(value = inputTitle, onValueChange = { inputTitle = it })
-            TextField(value = inputDetails, onValueChange = { inputDetails = it })
-            Button(onClick = {
-                viewModel.addToDo(title = inputTitle, details = inputDetails)
-                inputTitle = ""
-                inputDetails = ""
-            }) {
-                Text(text = "add")
+            Column (
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                TextField(value = inputTitle, onValueChange = { inputTitle = it }, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                )
+                TextField(value = inputDetails, onValueChange = { inputDetails = it }, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                )
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onClick = {
+                    viewModel.addToDo(title = inputTitle, details = inputDetails)
+                    inputTitle = ""
+                    inputDetails = ""
+                }) {
+                    Text(text = "Add note")
+                }
             }
         }
     }
