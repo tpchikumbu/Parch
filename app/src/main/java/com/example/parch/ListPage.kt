@@ -195,7 +195,6 @@ fun BottomSheet(viewModel: ToDoViewModel, dismissRequest: () -> Unit, todoItem: 
 //        mutableStateOf(false)
 //    }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
 //    FloatingActionButton(
 //        onClick = {
 //            isSheetOpen = true
