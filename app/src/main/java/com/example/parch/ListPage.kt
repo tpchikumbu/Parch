@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
@@ -82,7 +82,7 @@ fun ListPage(viewModel: ToDoViewModel) {
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             text = "No items in list.",
-            fontSize = 20.sp
+            fontSize = 20.sp,
         )
     }
 
@@ -154,7 +154,9 @@ fun ToDoItem(item: ToDo, onEdit: ()-> Unit, onDelete : ()-> Unit) {
             Text(
                 text = item.details,
                 fontSize = 14.sp,
-                color = Color.White
+                color = Color.White,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = SimpleDateFormat("HH:mm:aa, dd/mm/yy", Locale.ENGLISH).format(item.createdAt),
@@ -191,19 +193,8 @@ fun BottomSheet(viewModel: ToDoViewModel, dismissRequest: () -> Unit, todoItem: 
     var inputDetails by remember {
         mutableStateOf(todoItem.details)
     }
-//    var isSheetOpen by rememberSaveable {
-//        mutableStateOf(false)
-//    }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-//    FloatingActionButton(
-//        onClick = {
-//            isSheetOpen = true
-//        },
-//    ) {
-//        Icon(Icons.Filled.Add, "Add note")
-//    }
 
-//    if (isSheetOpen) {
         ModalBottomSheet(
             modifier = Modifier
                 .padding(5.dp),
