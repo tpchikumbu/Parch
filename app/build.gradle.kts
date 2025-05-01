@@ -1,8 +1,11 @@
-plugins {
+ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
+
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -38,6 +41,14 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.15"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 }
 
 dependencies {
@@ -59,10 +70,26 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.androidx.runtime.livedata)
+
+    // RoomDB
     implementation(libs.androidx.room.runtime)
     annotationProcessor(libs.androidx.room.compiler)
     kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
+    // Glance UI
     implementation(libs.androidx.glance)
     implementation(libs.androidx.glance.appwidget)
+
+    // Dagger and Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+
+    // AppCompat
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.appcompat.resources)
 }
+
+ kapt {
+     correctErrorTypes = true
+ }
